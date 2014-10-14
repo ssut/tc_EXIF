@@ -13,9 +13,14 @@ function EXIF_attached_image($target, $mother) {
 
     $attachment = ROOT . '/attach/' . getBlogId() . '/' . basename($mother);
     $exif = EXIF_cache(0, $entry['id'], $attachment);
+    if($exif === true) return $target;
     if($exif === false) {
         $exif = extract_EXIF($attachment);
-        if($exif === false) return false;
+        if($exif === false) {
+            EXIF_cache(0, $entry['id'], $attachment, array('NoEXIF' => 1));
+            return $target;
+        }
+
         EXIF_cache(0, $entry['id'], $attachment, $exif);
     }
 
@@ -25,9 +30,10 @@ function EXIF_attached_image($target, $mother) {
 function EXIF_other_image($target) {
     if(ini_get('allow_url_fopen') !== '1') return $target;
 
-    global $configVal, $defaultURL;
+    global $configVal, $entry, $defaultURL;
     requireComponent('Textcube.Function.Setting');
     $config = misc::fetchConfigVal($configVal);
+    if(!isset($entry['id'])) return $target;
     if(is_null($config)) return $target;
     if(array_key_exists('otherImage', $config) === false ||
         $config['otherImage'] !== '1') return $target;
@@ -55,6 +61,18 @@ function EXIF_other_image($target) {
     unset($src_pattern);
 
     foreach($images as list($tag, $url)) {
+        $exif = EXIF_cache(1, $entry['id'], $url);
+        var_dump($exif);
+        if($exif === true) continue; // no exif
+        if($exif === false) {
+            $exif = extract_EXIF($url);
+            if($exif === false) {
+                EXIF_cache(1, $entry['id'], $url, array('NoEXIF' => 1));
+                continue;
+            }
+
+            EXIF_cache(1, $entry['id'], $url, $exif);
+        }
         // $exif = extract_EXIF($url);
         // var_dump(extract_EXIF($url));
     }
@@ -86,7 +104,10 @@ function EXIF_cache($type, $entry_id, $url, $set = null) {
     $db->setQualifier('url_hash', 'eq', $url_hash);
     $row = $db->getRow();
     if(is_null($row) || empty($row)) return false;
-    return json_decode($row['data'], true);
+    $data = json_decode($row['data'], true);
+    if(array_key_exists('NoEXIF', $data)) return true;
+
+    return $data;
 }
 
 function EXIF_dataset($data) {
