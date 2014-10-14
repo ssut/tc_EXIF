@@ -1,11 +1,17 @@
 <?php
 function EXIF_attached_image($target, $mother) {
-    global $owner, $suri, $configVal;
+    global $configVal;
     requireComponent('Textcube.Function.Setting');
     $config = misc::fetchConfigVal($configVal);
     if(is_null($config)) return $target;
     if(array_key_exists('attachedImage', $config) === false ||
         $config['attachedImage'] !== '1') return $target;
+    $ext = misc::getFileExtension($mother);
+    if($ext !== 'jpg' && $ext !== 'jpeg') return $target;
+    unset($ext);
+
+    $attachPath = ROOT . '/attach/' . getBlogId() . '/' . basename($mother);
+    var_dump(extract_EXIF($attachPath));
 
     return $target;
 }
@@ -27,8 +33,8 @@ function EXIF_dataset($data) {
 }
 
 function extract_EXIF($path) {
-    require_once(dirname(__FILE__) . '/PEL/PelDataWindow.php');
-    require_once(dirname(__FILE__) . '/PEL/PelJpeg.php');
+    require_once(dirname(__FILE__) . '/lib/PelDataWindow.php');
+    require_once(dirname(__FILE__) . '/lib/PelJpeg.php');
 
     $data = new PelDataWindow(file_get_contents($path));
     if(!PelJpeg::isValid($data)) return false;
@@ -68,6 +74,26 @@ function extract_EXIF($path) {
     if(is_null($info['FocalLengthFilm']) && !is_null($info['FocalLength']) &&
         !empty($info['FocalLength'])) {
         $info['FocalLengthFilm'] = $info['FocalLength'];
+    }
+
+    if(!is_null($info['FocalLengthFilm']) && is_int($info['FocalLengthFilm'])) {
+        $info['FocalLengthFilm'] = number_format(
+            intval($info['FocalLengthFilm']), 1, '.', '') . ' mm';
+    }
+
+    if(!is_null($info['MaxAperture']) && stripos($info['MaxAperture'], '/') !== false) {
+        list($numerator, $denominator) = array_map(
+            'intval', explode('/', $info['MaxAperture']));
+        $max_aperture = '';
+        try {
+            $max_aperture = 'f/' . number_format(
+                $numerator / $denominator, 1, '.', '');
+        } catch (Exception $e) {
+        }
+
+        if($max_aperture !== '') {
+            $info['MaxAperture'] = $max_aperture;
+        }
     }
 
     return $info;
