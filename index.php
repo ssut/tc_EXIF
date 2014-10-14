@@ -11,18 +11,45 @@ function EXIF_attached_image($target, $mother) {
     unset($ext);
 
     $attachPath = ROOT . '/attach/' . getBlogId() . '/' . basename($mother);
-    var_dump(extract_EXIF($attachPath));
+    // var_dump(extract_EXIF($attachPath));
 
     return $target;
 }
 
 function EXIF_other_image($target) {
-    global $owner, $suri, $configVal;
+    if(ini_get('allow_url_fopen') !== '1') return $target;
+
+    global $configVal, $defaultURL;
     requireComponent('Textcube.Function.Setting');
     $config = misc::fetchConfigVal($configVal);
     if(is_null($config)) return $target;
     if(array_key_exists('otherImage', $config) === false ||
         $config['otherImage'] !== '1') return $target;
+
+    $images = array(); // [tag, src] ...
+    $pattern = '/(<img[^>]+>)/i';
+    $src_pattern = '/src="(.*?)"/i';
+    if(preg_match_all($pattern, $target, $matches)) {
+        if(isset($matches[0]) && count($matches[0]) > 0) {
+            foreach($matches[0] as $image) {
+                if(stripos($image, $defaultURL) !== false &&
+                    stripos($image, 'attach') !== false) continue;
+                if(preg_match($src_pattern, $image, $src_matches)) {
+                    if(!isset($src_matches[1])) continue;
+                    $src = $src_matches[1];
+                    if(stripos($src, '.jpg') !== false ||
+                        stripos($src, '.jpeg') !== false) {
+                        $images[] = array($image, $src);
+                    }
+                }
+            }
+        }
+    }
+    unset($pattern);
+    unset($src_pattern);
+
+    foreach($images as list($tag, $url)) {
+    }
 
     return $target;
 }
