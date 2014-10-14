@@ -24,6 +24,7 @@ function EXIF_attached_image($target, $mother) {
         EXIF_cache(0, $entry['id'], $attachment, $exif);
     }
 
+    $target .= EXIF_tagging($exif);
     return $target;
 }
 
@@ -62,7 +63,6 @@ function EXIF_other_image($target) {
 
     foreach($images as list($tag, $url)) {
         $exif = EXIF_cache(1, $entry['id'], $url);
-        var_dump($exif);
         if($exif === true) continue; // no exif
         if($exif === false) {
             $exif = extract_EXIF($url);
@@ -73,11 +73,49 @@ function EXIF_other_image($target) {
 
             EXIF_cache(1, $entry['id'], $url, $exif);
         }
-        // $exif = extract_EXIF($url);
-        // var_dump(extract_EXIF($url));
+
+        $append = EXIF_tagging($exif);
+        $target = str_replace($tag, $tag . $append, $target);
     }
 
     return $target;
+}
+
+function EXIF_tagging($exif) {
+    global $configVal, $entry;
+    requireComponent('Textcube.Function.Setting');
+    $config = misc::fetchConfigVal($configVal);
+    $base = '';
+
+    // not Google Maps :p
+    $maps = array(
+        'ex1' => 'Make',
+        'ex2' => 'Model',
+        'ex3' => 'ExposureMode',
+        'ex4' => 'MeteringMode',
+        'ex5' => 'WhiteBalance',
+        'ex6' => 'ExposureTime',
+        'ex7' => 'FNumber',
+        'ex8' => 'MaxAperture',
+        'ex9' => 'ExposureBias',
+        'ex10' => 'FocalLength',
+        'ex11' => 'FocalLengthFilm',
+        'ex12' => 'ISO',
+        'ex13' => 'Flash',
+        'ex14' => 'DateTime',
+        'ex15' => 'Software',
+    );
+
+    $matches = array();
+
+    foreach($maps as $ex => $key) {
+        if(array_key_exists($ex, $config) && $config[$ex] &&
+            !is_null($exif[$key]) && !empty($exif[$key])) {
+            $matches[$key] = $exif[$key];
+        }
+    }
+
+    return '';
 }
 
 function EXIF_cache($type, $entry_id, $url, $set = null) {
@@ -150,7 +188,7 @@ function extract_EXIF($path) {
 
     set_or_null($info, 'Make', PelTag::MAKE, $entries);
     set_or_null($info, 'Model', PelTag::MODEL, $entries);
-    set_or_null($info, 'ExposureProgram', PelTag::EXPOSURE_PROGRAM, $entries);
+    set_or_null($info, 'ExposureMode', PelTag::EXPOSURE_PROGRAM, $entries);
     set_or_null($info, 'MeteringMode', PelTag::METERING_MODE, $entries);
     set_or_null($info, 'WhiteBalance', PelTag::WHITE_BALANCE, $entries);
     set_or_null($info, 'ExposureTime', PelTag::EXPOSURE_TIME, $entries);

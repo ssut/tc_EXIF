@@ -58,7 +58,7 @@
                     <op name="ex3" value="1" checked="checked">ExposureMode</op>
                     <op name="ex4" value="1" checked="checked">MeteringMode</op>
                     <op name="ex5" value="1" checked="checked">WB</op>
-                    <op name="ex6" value="1" checked="checked"><![CDATA[ShutterSpeed<br>]]></op>
+                    <op name="ex6" value="1" checked="checked"><![CDATA[ExposureTime<br>]]></op>
                     <op name="ex7" value="1" checked="checked">F-Number</op>
                     <op name="ex8" value="1" checked="checked">MaxAperture</op>
                     <op name="ex9" value="1" checked="checked">ExposureBias(EV)</op>
