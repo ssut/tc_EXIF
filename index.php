@@ -1,8 +1,9 @@
 <?php
 function EXIF_attached_image($target, $mother) {
-    global $configVal;
+    global $configVal, $entry;
     requireComponent('Textcube.Function.Setting');
     $config = misc::fetchConfigVal($configVal);
+    if(!isset($entry['id'])) return $target;
     if(is_null($config)) return $target;
     if(array_key_exists('attachedImage', $config) === false ||
         $config['attachedImage'] !== '1') return $target;
@@ -10,8 +11,13 @@ function EXIF_attached_image($target, $mother) {
     if($ext !== 'jpg' && $ext !== 'jpeg') return $target;
     unset($ext);
 
-    $attachPath = ROOT . '/attach/' . getBlogId() . '/' . basename($mother);
-    // var_dump(extract_EXIF($attachPath));
+    $attachment = ROOT . '/attach/' . getBlogId() . '/' . basename($mother);
+    $exif = EXIF_cache(0, $entry['id'], $attachment);
+    if($exif === false) {
+        $exif = extract_EXIF($attachment);
+        if($exif === false) return false;
+        EXIF_cache(0, $entry['id'], $attachment, $exif);
+    }
 
     return $target;
 }
@@ -49,9 +55,38 @@ function EXIF_other_image($target) {
     unset($src_pattern);
 
     foreach($images as list($tag, $url)) {
+        // $exif = extract_EXIF($url);
+        // var_dump(extract_EXIF($url));
     }
 
     return $target;
+}
+
+function EXIF_cache($type, $entry_id, $url, $set = null) {
+    $db = DBModel::getInstance();
+    $db->reset('ExifCaches');
+    $type = POD::escapeString($type);
+    $entry_id = POD::escapeString($entry_id);
+    $url_hash = sha1($url);
+
+    if(!is_null($set)) {
+        $data = json_encode($set);
+
+        $db->setAttribute('type', $type);
+        $db->setAttribute('entry_id', $entry_id);
+        $db->setAttribute('url_hash', $url_hash);
+        $db->setAttribute('data', $data, true);
+        $result = $db->replace();
+
+        return $result;
+    }
+
+    $db->setQualifier('type', 'eq', $type);
+    $db->setQualifier('entry_id', 'eq', $entry_id);
+    $db->setQualifier('url_hash', 'eq', $url_hash);
+    $row = $db->getRow();
+    if(is_null($row) || empty($row)) return false;
+    return json_decode($row['data'], true);
 }
 
 function EXIF_dataset($data) {
@@ -63,16 +98,26 @@ function extract_EXIF($path) {
     require_once(dirname(__FILE__) . '/lib/PelDataWindow.php');
     require_once(dirname(__FILE__) . '/lib/PelJpeg.php');
 
-    $data = new PelDataWindow(file_get_contents($path));
+    $data = null;
+    try {
+        $content = file_get_contents($path);
+        $data = new PelDataWindow($content);
+    } catch (Exception $e) {
+        return false;
+    } finally {
+        unset($content);
+    }
     if(!PelJpeg::isValid($data)) return false;
 
     $jpeg = new PelJpeg();
     $jpeg->load($data);
     $exif = $jpeg->getExif();
-    $tiff = $exif->getTiff();
-    $ifd0 = $tiff->getIfd();
-
     if(is_null($exif)) return false;
+
+    $tiff = $exif->getTiff();
+    if(is_null($tiff)) return false;
+
+    $ifd0 = $tiff->getIfd();
 
     $info = array();
     $entries = array();

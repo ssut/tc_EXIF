@@ -73,4 +73,46 @@
             </fieldset>
         </config>
     </binding>
+    <storage>
+        <table>
+            <name>ExifCaches</name>
+            <fields>
+                <field>
+                    <name>type</name>
+                    <attribute>int</attribute>
+                    <length>1</length>
+                    <isnull>0</isnull>
+                    <default>0</default>
+                    <!-- 0 is blog attachment files, 1 is other attachment files -->
+                </field>
+                <field>
+                    <name>entry_id</name>
+                    <attribute>int</attribute>
+                    <length>11</length>
+                    <isnull>0</isnull>
+                    <default>0</default>
+                    <!-- associated entry(article) id -->
+                </field>
+                <field>
+                    <name>url_hash</name>
+                    <attribute>varchar</attribute>
+                    <length>40</length>
+                    <isnull>0</isnull>
+                    <default></default>
+                    <!-- sha1 hash -->
+                </field>
+                <field>
+                    <name>data</name>
+                    <attribute>varchar</attribute>
+                    <length>8192</length>
+                    <isnull>0</isnull>
+                    <default><![CDATA[{}]]></default>
+                    <!-- json data -->
+                </field>
+            </fields>
+            <key>type</key>
+            <key>entry_id</key>
+            <key>url_hash</key>
+        </table>
+    </storage>
 </plugin>
