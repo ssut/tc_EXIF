@@ -48,7 +48,8 @@
             </fieldset>
             <fieldset legend="기타 설정">
                 <field title=" " name="otherSettings" type="checkbox" titledirection="bk">
-                    <op name="addLinkToManage" value="1" checked="checked"><![CDATA[글 상단에 해당 게시물에 해당하는 EXIF 관리 페이지로 연결하는 링크 추가]]></op>
+                    <op name="addLinkToManage" value="1" checked="checked"><![CDATA[글 상단에 해당 게시물에 해당하는 EXIF 관리 페이지로 연결하는 링크 추가<br>]]></op>
+                    <op name="insertCSS" value="1" checked="checked"><![CDATA[EXIF를 위한 CSS 삽입 (직접 꾸미고 싶다면 옵션을 꺼주세요)]]></op>
                 </field>
             </fieldset>
         </config>
@@ -82,7 +83,8 @@
             </fieldset>
             <fieldset legend="Other settings">
                 <field title=" " name="otherSettings" type="checkbox" titledirection="bk">
-                    <op name="addLinkToManage" value="1" checked="checked"><![CDATA[Add a link that manages EXIF data to top of the article]]></op>
+                    <op name="addLinkToManage" value="1" checked="checked"><![CDATA[Add a link that manages EXIF data to top of the article<br>]]></op>
+                    <op name="insertCSS" value="1" checked="checked"><![CDATA[Insert CSS codes for pretty print (turn off if you want to make it yourself)]]></op>
                 </field>
             </fieldset>
         </config>

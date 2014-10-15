@@ -1,5 +1,11 @@
 <?php
 function EXIF_default_css($target) {
+    global $configVal;
+    requireComponent('Textcube.Function.Setting');
+    $config = misc::fetchConfigVal($configVal);
+
+    if(array_key_exists('attachedImage', $config) !== false &&
+        $config['insertCSS']) {
     $target .= <<<HTML
 <style type="text/css">
 div.tc_EXIF {
@@ -25,6 +31,8 @@ div.tc_EXIF:after {
 }
 </style>
 HTML;
+    }
+
     return $target;
 }
 
