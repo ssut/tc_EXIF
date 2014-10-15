@@ -12,6 +12,7 @@ function EXIF_admin_load() {
 
     $entries = array();
     $count = $db->getCount();
+    $db->setOrder('entry_id', 'desc');
     $all = $db->getAll('entry_id');
     foreach($all as $key => list($k, $v)) {
         array_push($entries, $k);
@@ -94,14 +95,20 @@ function EXIF_admin_load() {
                 ': ' => '</strong> ',
                 ',' => ''
             ));
+
+            $uniq = json_encode(array(
+                'type' => $item['type'],
+                'entry_id' => $item['entry_id'],
+                'url' => $item['url']
+            ));
     ?>
         <tr>
             <td><?php echo $item['entry_id'] ?></td>
             <td><?php echo $item['type'] == 0 ? 'blog' : 'other' ?></td>
             <td><a href="<?php echo $preview_image ?>" target="_blank" class="preview"><img src="<?php echo $preview_image ?>" alt="preview image" width="auto" height="20px"></a></td>
             <td><a class="tooltip" title="<?php echo $data_tooltip ?>"><?php echo $preview ?></a></td>
-            <td><?php echo $item['enabled'] == 1 ? 'O' : 'X' ?></td>
-            <td><?php  ?></td>
+            <td><input type="button" name="toggleEnabled" value="<?php echo $item['is_enabled'] == 1 ? 'ON' : 'OFF' ?>" data-data='<?php echo $uniq ?>'></td>
+            <td><input type="button" name="deleteExif" value="DELETE" data-data='<?php echo $uniq ?>'></td>
         </tr>
     <?
         }

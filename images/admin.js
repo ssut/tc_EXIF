@@ -69,9 +69,52 @@
         });
     };
 
+    var setButtonEvent = function() {
+        $('input[name="toggleEnabled"]').click(function() {
+            var self = $(this);
+            var data = self.data('data');
+            $.ajax({
+                type: 'POST',
+                url: '/plugin/EXIF/toggle',
+                data: data,
+                cache: false,
+                beforeSend: function() {
+                    self.attr('disabled', 'disabled');
+                },
+                success: function(data) {
+                    self.removeAttr('disabled');
+                    if(data.success) {
+                        self.val(data.message);
+                    } else alert(data.message);
+                }
+            });
+        });
+
+        $('input[name="deleteExif"]').click(function() {
+            var self = $(this);
+            var data = self.data('data');
+            $.ajax({
+                type: 'POST',
+                url: '/plugin/EXIF/delete',
+                data: data,
+                cache: false,
+                beforeSend: function() {
+                    self.attr('disabled', 'disabled');
+                },
+                success: function(data) {
+                    self.removeAttr('disabled');
+                    if(data.success) {
+                        self.parent().parent().remove();
+                    }
+                }
+            });
+        });
+    };
+
     // starting the script on page load
     $(document).ready(function() {
         tooltip();
         imagePreview();
+        setButtonEvent();
     });
 })(jQuery);
