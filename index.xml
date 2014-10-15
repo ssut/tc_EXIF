@@ -53,7 +53,7 @@
                 </field>
             </fieldset>
         </config>
-        <config dataValHandler="EXIF_dataset" xml:lang="ko">
+        <config dataValHandler="EXIF_dataset" xml:lang="en">
             <window width="500" height="610" />
             <fieldset legend="Print">
                 <field title=" " name="exifView" type="checkbox" titledirection="bk">
