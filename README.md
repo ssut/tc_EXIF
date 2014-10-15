@@ -95,7 +95,7 @@ div.tc_EXIF:after {
 
 ### Management Panel
 
-![](http://puu.sh/ccW6f/06ee7c78b5.png)
+![](http://puu.sh/ccZwT/1944988452.png)
 
 You can manage cached EXIF data in textcube admin page.
 
