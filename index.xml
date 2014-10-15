@@ -14,6 +14,7 @@
     <binding>
         <listener event="ViewAttachedImage" handler="EXIF_attached_image" />
         <listener event="ViewPostContent" handler="EXIF_other_image" />
+        <tag name="SKIN_head_end" handler="EXIF_default_css" />
         <config dataValHandler="EXIF_dataset" xml:lang="ko">
             <window width="500" height="610" />
             <fieldset legend="EXIF 적용 범위">
@@ -94,9 +95,9 @@
                     <!-- associated entry(article) id -->
                 </field>
                 <field>
-                    <name>url_hash</name>
+                    <name>url</name>
                     <attribute>varchar</attribute>
-                    <length>40</length>
+                    <length>255</length>
                     <isnull>0</isnull>
                     <default></default>
                     <!-- sha1 hash -->
@@ -109,10 +110,18 @@
                     <default><![CDATA[{}]]></default>
                     <!-- json data -->
                 </field>
+                <field>
+                    <name>is_enabled</name>
+                    <attribute>tinyint</attribute>
+                    <length>1</length>
+                    <isnull>0</isnull>
+                    <default>1</default>
+                    <!-- enabled -->
+                </field>
             </fields>
             <key>type</key>
             <key>entry_id</key>
-            <key>url_hash</key>
+            <key>url</key>
         </table>
     </storage>
 </plugin>
