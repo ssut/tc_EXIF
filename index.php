@@ -1,4 +1,33 @@
 <?php
+function EXIF_default_css($target) {
+    $target .= <<<HTML
+<style type="text/css">
+div.tc_EXIF {
+}
+div.tc_EXIF dl {
+    font-size: 0.6em;
+}
+div.tc_EXIF dl dt {
+    display: /*inline-block*/none;
+    margin: 0;
+    padding: 0 5px;
+}
+div.tc_EXIF dl dd {
+    display: inline-block;
+    margin: 0;
+    padding: 0 5px;
+    word-break: break-all;
+}
+div.tc_EXIF:after {
+    content: '';
+    display: table;
+    clear: both;
+}
+</style>
+HTML;
+    return $target;
+}
+
 function EXIF_attached_image($target, $mother) {
     global $configVal, $entry;
     requireComponent('Textcube.Function.Setting');
@@ -24,7 +53,9 @@ function EXIF_attached_image($target, $mother) {
         EXIF_cache(0, $entry['id'], $attachment, $exif);
     }
 
+    $target = '<div class="tc_EXIF">' . $target;
     $target .= EXIF_tagging($exif);
+    $target .= '</div>';
     return $target;
 }
 
@@ -75,7 +106,8 @@ function EXIF_other_image($target) {
         }
 
         $append = EXIF_tagging($exif);
-        $target = str_replace($tag, $tag . $append, $target);
+        $new = '<div class="tc_EXIF tc_EXIF_other">' . $tag . $append . '</div>';
+        $target = str_replace($tag, $new, $target);
     }
 
     return $target;
@@ -85,7 +117,7 @@ function EXIF_tagging($exif) {
     global $configVal, $entry;
     requireComponent('Textcube.Function.Setting');
     $config = misc::fetchConfigVal($configVal);
-    $base = '';
+    $code = '';
 
     // not Google Maps :p
     $maps = array(
@@ -115,7 +147,15 @@ function EXIF_tagging($exif) {
         }
     }
 
-    return '';
+    if(count($matches) === 0) return '';
+    $code = '<dl>';
+    foreach($matches as $key => $value) {
+        $code .= '<dt data-key="' . $key . '">' . $key . '</dt>';
+        $code .= '<dd>' . htmlspecialchars($value) . '</dd>';
+    }
+    $code .= '</dl>';
+
+    return $code;
 }
 
 function EXIF_cache($type, $entry_id, $url, $set = null) {
@@ -123,14 +163,13 @@ function EXIF_cache($type, $entry_id, $url, $set = null) {
     $db->reset('ExifCaches');
     $type = POD::escapeString($type);
     $entry_id = POD::escapeString($entry_id);
-    $url_hash = sha1($url);
 
     if(!is_null($set)) {
         $data = json_encode($set);
 
         $db->setAttribute('type', $type);
         $db->setAttribute('entry_id', $entry_id);
-        $db->setAttribute('url_hash', $url_hash);
+        $db->setAttribute('url', $url, true);
         $db->setAttribute('data', $data, true);
         $result = $db->replace();
 
@@ -139,11 +178,11 @@ function EXIF_cache($type, $entry_id, $url, $set = null) {
 
     $db->setQualifier('type', 'eq', $type);
     $db->setQualifier('entry_id', 'eq', $entry_id);
-    $db->setQualifier('url_hash', 'eq', $url_hash);
+    $db->setQualifier('url', 'eq', $url, true);
     $row = $db->getRow();
     if(is_null($row) || empty($row)) return false;
     $data = json_decode($row['data'], true);
-    if(array_key_exists('NoEXIF', $data)) return true;
+    if(array_key_exists('NoEXIF', $data) || $row['is_enabled'] === 0) return true;
 
     return $data;
 }
