@@ -187,6 +187,11 @@ function EXIF_cache($type, $entry_id, $url, $set = null) {
     return $data;
 }
 
+function EXIF_admin() {
+    require_once(dirname(__FILE__) . '/admin.php');
+    EXIF_admin_load();
+}
+
 function EXIF_dataset($data) {
     $cfg = misc::fetchConfigVal($data);
     return true;

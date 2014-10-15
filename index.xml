@@ -73,6 +73,25 @@
                 </field>
             </fieldset>
         </config>
+        <adminMenu>
+            <viewMethods>
+                <method>
+                    <topMenu>plugin</topMenu>
+                    <contentMenuOrder>3</contentMenuOrder>
+                    <title xml:lang="ko">EXIF 데이터 관리</title>
+                    <title xml:lang="en">Manage EXIF Data</title>
+                    <handler>EXIF_admin</handler>
+                    <params>
+                        <param>
+                            <name>entry</name>
+                            <type>int</type>
+                            <mandatory>0</mandatory>
+                            <default>0</default>
+                        </param>
+                    </params>
+                </method>
+            </viewMethods>
+        </adminMenu>
     </binding>
     <storage>
         <table>
