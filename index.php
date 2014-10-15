@@ -221,6 +221,19 @@ function EXIF_toggle() {
     $entry_id = intval(POD::escapeString($_POST['entry_id']));
     $url = $_POST['url'];
 
+    if($type === 'batch') {
+        $enabled = $_POST['toggle'] == '1' ? '1' : '0';
+        $db->reset('ExifCaches');
+        $db->setQualifier('entry_id', 'eq', $entry_id);
+        $db->setAttribute('is_enabled', $enabled);
+        $result = $db->update();
+        jsonify(array(
+            'success' => $result,
+            'message' => ''
+        ));
+        return;
+    }
+
     $db->reset('ExifCaches');
     $db->setQualifier('type', 'eq', $type, true);
     $db->setQualifier('entry_id', 'eq', $entry_id);
@@ -240,7 +253,7 @@ function EXIF_toggle() {
     jsonify(array(
         'success' => $result,
         'message' => $enabled ? 'ON' : 'OFF'
-        ));
+    ));
     return;
 }
 
@@ -250,6 +263,17 @@ function EXIF_delete() {
     $type = $_POST['type'];
     $entry_id = intval(POD::escapeString($_POST['entry_id']));
     $url = $_POST['url'];
+
+    if($type === 'batch') {
+        $db->reset('ExifCaches');
+        $db->setQualifier('entry_id', 'eq', $entry_id);
+        $result = $db->delete();
+        jsonify(array(
+            'success' => $result,
+            'message' => 'the EXIF data has been deleted successfully'
+        ));
+        return;
+    }
 
     $db->reset('ExifCaches');
     $db->setQualifier('type', 'eq', $type, true);

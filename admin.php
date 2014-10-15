@@ -53,8 +53,14 @@ function EXIF_admin_load() {
                 $selected = $entry == $num ? ' selected' : '';
                 echo '<option value="' . $num . '"' . $selected . '>' . $num . ' :: ' . $title . '</option>';
             }
+
+            $disables = $entry && $entry > 0 ? '' : ' disabled';
         ?></select>
         <input type="submit" value="go">
+        &nbsp;batch – &nbsp;
+        <input type="button" name="batchToggleOn" value="on" data-entry="<?php echo $entry ?>"<?php echo $disables ?>>
+        <input type="button" name="batchToggleOff" value="off" data-entry="<?php echo $entry ?>"<?php echo $disables ?>>
+        <input type="button" name="batchDelete" value="delete" data-entry="<?php echo $entry ?>"<?php echo $disables ?>>
     </div>
 </form>
 

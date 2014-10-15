@@ -70,6 +70,8 @@
     };
 
     var setButtonEvent = function() {
+        var buttons = $('input[name^="batch"], table.data-inbox input[type="button"]');
+
         $('input[name="toggleEnabled"]').click(function() {
             var self = $(this);
             var data = self.data('data');
@@ -79,12 +81,84 @@
                 data: data,
                 cache: false,
                 beforeSend: function() {
-                    self.attr('disabled', 'disabled');
+                    buttons.attr('disabled', 'disabled');
                 },
                 success: function(data) {
-                    self.removeAttr('disabled');
+                    buttons.removeAttr('disabled');
                     if(data.success) {
                         self.val(data.message);
+                    } else alert(data.message);
+                }
+            });
+        });
+
+        $('input[name="batchToggleOn"]').click(function() {
+            var self = $(this);
+            var entry = self.data('entry');
+            $.ajax({
+                type: 'POST',
+                url: '/plugin/EXIF/toggle',
+                data: {
+                    type: 'batch',
+                    entry_id: entry,
+                    toggle: 1
+                },
+                cache: false,
+                beforeSend: function() {
+                    buttons.attr('disabled', 'disabled');
+                },
+                success: function(data) {
+                    buttons.removeAttr('disabled');
+                    if(data.success) {
+                        location.reload();
+                    } else alert(data.message);
+                }
+            });
+        });
+
+        $('input[name="batchToggleOff"]').click(function() {
+            var self = $(this);
+            var entry = self.data('entry');
+            $.ajax({
+                type: 'POST',
+                url: '/plugin/EXIF/toggle',
+                data: {
+                    type: 'batch',
+                    entry_id: entry,
+                    toggle: 0
+                },
+                cache: false,
+                beforeSend: function() {
+                    buttons.attr('disabled', 'disabled');
+                },
+                success: function(data) {
+                    buttons.removeAttr('disabled');
+                    if(data.success) {
+                        location.reload();
+                    } else alert(data.message);
+                }
+            });
+        });
+
+        $('input[name="batchDelete"]').click(function() {
+            if(!confirm('Are you sure want to delete all?')) return;
+            var self = $(this);
+            var entry = self.data('entry');
+            $.ajax({
+                type: 'POST',
+                url: '/plugin/EXIF/delete',
+                data: {
+                    type: 'batch',
+                    entry_id: entry
+                },
+                cache: false,
+                beforeSend: function() {
+                    buttons.attr('disabled', 'disabled');
+                },
+                success: function(data) {
+                    buttons.removeAttr('disabled');
+                    if(data.success) {
+                        location.reload();
                     } else alert(data.message);
                 }
             });
@@ -99,10 +173,10 @@
                 data: data,
                 cache: false,
                 beforeSend: function() {
-                    self.attr('disabled', 'disabled');
+                    buttons.attr('disabled', 'disabled');
                 },
                 success: function(data) {
-                    self.removeAttr('disabled');
+                    buttons.removeAttr('disabled');
                     if(data.success) {
                         self.parent().parent().remove();
                     }
