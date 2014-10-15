@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<plugin version="1.0">
+    <title>EXIF</title>
+    <version>1.0</version>
+    <description xml:lang="ko"><![CDATA[JPEG 이미지의 EXIF 데이터를 표시합니다.]]></description>
+    <description xml:lang="en"><![CDATA[Displays JPEG Images with corresponding EXIF if available.]]></description>
+    <license>MIT</license>
+    <link>http://b.ssut.me</link>
+    <author link="http://b.ssut.me"><![CDATA[ssut]]></author>
+    <safety changeData="no" exposeData="no" accessLocal="no" accessRemote="no" accessRaw="no" />
+    <requirements>
+        <tattertools>1.8</tattertools>
+    </requirements>
+    <binding>
+        <listener event="ViewAttachedImage" handler="EXIF_attached_image" />
+        <listener event="ViewPostContent" handler="EXIF_other_image" />
+        <listener event="DeletePost" handler="EXIF_delete_post" />
+        <listener event="/plugin/EXIF/toggle" handler="EXIF_toggle" scope="owner" />
+        <listener event="/plugin/EXIF/delete" handler="EXIF_delete" scope="owner" />
+        <tag name="SKIN_head_end" handler="EXIF_default_css" />
+        <config dataValHandler="EXIF_dataset" xml:lang="ko">
+            <window width="500" height="610" />
+            <fieldset legend="EXIF 적용 범위">
+                <field title=" " name="exifView" type="checkbox" titledirection="bk">
+                    <op name="attachedImage" value="1" checked="checked"><![CDATA[첨부 이미지&nbsp;&nbsp;]]></op>
+                    <op name="otherImage" value="1" checked="checked">외부 이미지</op>
+                </field>
+            </fieldset>
+            <fieldset legend="표시할 EXIF 정보">
+                <field title=" " name="exifSelect" type="checkbox" titledirection="bk" >
+                    <op name="ex1" value="1" checked="checked">제조사</op>
+                    <op name="ex2" value="1" checked="checked">모델명</op>
+                    <op name="ex3" value="1" checked="checked">촬영모드</op>
+                    <op name="ex4" value="1" checked="checked">측광모드</op>
+                    <op name="ex5" value="1" checked="checked">화이트 밸런스</op>
+                    <op name="ex6" value="1" checked="checked"><![CDATA[셔터속도<br>]]></op>
+                    <op name="ex7" value="1" checked="checked">조리개 값</op>
+                    <op name="ex8" value="1" checked="checked">최대 조리개 값</op>
+                    <op name="ex9" value="1" checked="checked">노출보정</op>
+                    <op name="ex10" value="1" checked="checked">초점거리</op>
+                    <op name="ex11" value="1" checked="checked"><![CDATA[35mm 초점거리<br>]]></op>
+                    <op name="ex12" value="1" checked="checked">ISO 값</op>
+                    <op name="ex13" value="1" checked="checked">플래쉬사용</op>
+                    <op name="ex14" value="1" checked="checked">촬영시각</op>
+                    <op name="ex15" value="1" checked="checked">소프트웨어</op>
+                    <caption><![CDATA[<b>tip:</b> 선택을 하더라도 EXIF 정보가 없는 것은 표시되지 않습니다.]]></caption>
+                </field>
+            </fieldset>
+            <fieldset legend="기타 설정">
+                <field title=" " name="otherSettings" type="checkbox" titledirection="bk">
+                    <op name="addLinkToManage" value="1" checked="checked"><![CDATA[글 상단에 해당 게시물에 해당하는 EXIF 관리 페이지로 연결하는 링크 추가<br>]]></op>
+                    <op name="insertCSS" value="1" checked="checked"><![CDATA[EXIF를 위한 CSS 삽입 (직접 꾸미고 싶다면 옵션을 꺼주세요)]]></op>
+                </field>
+            </fieldset>
+        </config>
+        <config dataValHandler="EXIF_dataset" xml:lang="en">
+            <window width="500" height="610" />
+            <fieldset legend="Print">
+                <field title=" " name="exifView" type="checkbox" titledirection="bk">
+                    <op name="attachedImage"  value="1" checked="checked"><![CDATA[Attached images&nbsp;&nbsp;]]></op>
+                    <op name="otherImage" value="1" checked="checked">Other images</op>
+                </field>
+            </fieldset>
+            <fieldset legend="EXIF options to print">
+                <field title=" " name="exifSelect" type="checkbox" titledirection="bk" >
+                    <op name="ex1" value="1" checked="checked">Make</op>
+                    <op name="ex2" value="1" checked="checked">Model</op>
+                    <op name="ex3" value="1" checked="checked">ExposureMode</op>
+                    <op name="ex4" value="1" checked="checked">MeteringMode</op>
+                    <op name="ex5" value="1" checked="checked">WB</op>
+                    <op name="ex6" value="1" checked="checked"><![CDATA[ExposureTime<br>]]></op>
+                    <op name="ex7" value="1" checked="checked">F-Number</op>
+                    <op name="ex8" value="1" checked="checked">MaxAperture</op>
+                    <op name="ex9" value="1" checked="checked">ExposureBias(EV)</op>
+                    <op name="ex10" value="1" checked="checked">FocalLength</op>
+                    <op name="ex11" value="1" checked="checked"><![CDATA[35mm equiv.<br>]]></op>
+                    <op name="ex12" value="1" checked="checked">ISO</op>
+                    <op name="ex13" value="1" checked="checked">Flash</op>
+                    <op name="ex14" value="1" checked="checked">DateTime</op>
+                    <op name="ex15" value="1" checked="checked">Software</op>
+                    <caption><![CDATA[<b>tip:</b> if it does not exist, then print nothing.]]></caption>
+                </field>
+            </fieldset>
+            <fieldset legend="Other settings">
+                <field title=" " name="otherSettings" type="checkbox" titledirection="bk">
+                    <op name="addLinkToManage" value="1" checked="checked"><![CDATA[Add a link that manages EXIF data to top of the article<br>]]></op>
+                    <op name="insertCSS" value="1" checked="checked"><![CDATA[Insert CSS codes for pretty print (turn off if you want to make it yourself)]]></op>
+                </field>
+            </fieldset>
+        </config>
+        <adminMenu>
+            <viewMethods>
+                <method>
+                    <topMenu>plugin</topMenu>
+                    <contentMenuOrder>3</contentMenuOrder>
+                    <title xml:lang="ko">EXIF 데이터 관리</title>
+                    <title xml:lang="en">Manage EXIF Data</title>
+                    <handler>EXIF_admin</handler>
+                    <params>
+                        <param>
+                            <name>entry</name>
+                            <type>int</type>
+                            <mandatory>0</mandatory>
+                            <default>0</default>
+                        </param>
+                        <param>
+                            <name>p</name>
+                            <type>int</type>
+                            <mandatory>0</mandatory>
+                            <default>1</default>
+                        </param>
+                    </params>
+                </method>
+            </viewMethods>
+        </adminMenu>
+    </binding>
+    <storage>
+        <table>
+            <name>ExifCaches</name>
+            <fields>
+                <field>
+                    <name>type</name>
+                    <attribute>int</attribute>
+                    <length>1</length>
+                    <isnull>0</isnull>
+                    <default>0</default>
+                    <!-- 0 is blog attachment files, 1 is other attachment files -->
+                </field>
+                <field>
+                    <name>entry_id</name>
+                    <attribute>int</attribute>
+                    <length>11</length>
+                    <isnull>0</isnull>
+                    <default>0</default>
+                    <!-- associated entry(article) id -->
+                </field>
+                <field>
+                    <name>url</name>
+                    <attribute>varchar</attribute>
+                    <length>255</length>
+                    <isnull>0</isnull>
+                    <default></default>
+                    <!-- sha1 hash -->
+                </field>
+                <field>
+                    <name>data</name>
+                    <attribute>varchar</attribute>
+                    <length>8192</length>
+                    <isnull>0</isnull>
+                    <default><![CDATA[{}]]></default>
+                    <!-- json data -->
+                </field>
+                <field>
+                    <name>is_enabled</name>
+                    <attribute>tinyint</attribute>
+                    <length>1</length>
+                    <isnull>0</isnull>
+                    <default>1</default>
+                    <!-- enabled -->
+                </field>
+            </fields>
+            <key>type</key>
+            <key>entry_id</key>
+            <key>url</key>
+        </table>
+    </storage>
+</plugin>
