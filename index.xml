@@ -14,6 +14,9 @@
     <binding>
         <listener event="ViewAttachedImage" handler="EXIF_attached_image" />
         <listener event="ViewPostContent" handler="EXIF_other_image" />
+        <listener event="DeletePost" handler="EXIF_delete_post" />
+        <listener event="/plugin/EXIF/toggle" handler="EXIF_toggle" scope="owner" />
+        <listener event="/plugin/EXIF/delete" handler="EXIF_delete" scope="owner" />
         <tag name="SKIN_head_end" handler="EXIF_default_css" />
         <config dataValHandler="EXIF_dataset" xml:lang="ko">
             <window width="500" height="610" />
@@ -43,6 +46,11 @@
                     <caption><![CDATA[<b>tip:</b> 선택을 하더라도 EXIF 정보가 없는 것은 표시되지 않습니다.]]></caption>
                 </field>
             </fieldset>
+            <fieldset legend="기타 설정">
+                <field title=" " name="otherSettings" type="checkbox" titledirection="bk">
+                    <op name="addLinkToManage" value="1" checked="checked"><![CDATA[글 상단에 해당 게시물에 해당하는 EXIF 관리 페이지로 연결하는 링크 추가]]></op>
+                </field>
+            </fieldset>
         </config>
         <config dataValHandler="EXIF_dataset" xml:lang="ko">
             <window width="500" height="610" />
@@ -70,6 +78,11 @@
                     <op name="ex14" value="1" checked="checked">DateTime</op>
                     <op name="ex15" value="1" checked="checked">Software</op>
                     <caption><![CDATA[<b>tip:</b> if it does not exist, then print nothing.]]></caption>
+                </field>
+            </fieldset>
+            <fieldset legend="Other settings">
+                <field title=" " name="otherSettings" type="checkbox" titledirection="bk">
+                    <op name="addLinkToManage" value="1" checked="checked"><![CDATA[Add a link that manages EXIF data to top of the article]]></op>
                 </field>
             </fieldset>
         </config>

@@ -60,11 +60,21 @@ function EXIF_attached_image($target, $mother) {
 }
 
 function EXIF_other_image($target) {
-    if(ini_get('allow_url_fopen') !== '1') return $target;
-
     global $configVal, $entry, $defaultURL;
     requireComponent('Textcube.Function.Setting');
     $config = misc::fetchConfigVal($configVal);
+
+    if(array_key_exists('addLinkToManage', $config) && $config['addLinkToManage']) {
+        $admin_url = '/owner/plugin/adminMenu?name=tc_EXIF/EXIF_admin&entry=' . $entry['id'];
+        $head = <<<HTML
+<div style="text-align: center; font-size: 10px; padding: 2px; margin: 1px">
+    <a href="{$admin_url}" target="_blank">EXIF settings of this article</a>
+</div>
+HTML;
+        $target = $head . $target;
+    }
+    if(ini_get('allow_url_fopen') !== '1') return $target;
+
     if(!isset($entry['id'])) return $target;
     if(is_null($config)) return $target;
     if(array_key_exists('otherImage', $config) === false ||
@@ -182,7 +192,7 @@ function EXIF_cache($type, $entry_id, $url, $set = null) {
     $row = $db->getRow();
     if(is_null($row) || empty($row)) return false;
     $data = json_decode($row['data'], true);
-    if(array_key_exists('NoEXIF', $data) || $row['is_enabled'] === 0) return true;
+    if(array_key_exists('NoEXIF', $data) || $row['is_enabled'] == '0') return true;
 
     return $data;
 }
@@ -190,6 +200,76 @@ function EXIF_cache($type, $entry_id, $url, $set = null) {
 function EXIF_admin() {
     require_once(dirname(__FILE__) . '/admin.php');
     EXIF_admin_load();
+}
+
+function jsonify($arr) {
+    echo json_encode($arr);
+}
+
+function EXIF_toggle() {
+    header('Content-Type: application/json');
+    $db = DBModel::getInstance();
+    $type = $_POST['type'];
+    $entry_id = intval(POD::escapeString($_POST['entry_id']));
+    $url = $_POST['url'];
+
+    $db->reset('ExifCaches');
+    $db->setQualifier('type', 'eq', $type, true);
+    $db->setQualifier('entry_id', 'eq', $entry_id);
+    $db->setQualifier('url', 'eq', $url, true);
+    $row = $db->getRow();
+    if(is_null($row) || empty($row)) {
+        jsonify(array(
+            'success' => false,
+            'message' => 'target not found'
+        ));
+        return;
+    }
+
+    $enabled = $row['is_enabled'] == '1' ? '0' : '1';
+    $db->setAttribute('is_enabled', $enabled);
+    $result = $db->update();
+    jsonify(array(
+        'success' => $result,
+        'message' => $enabled ? 'ON' : 'OFF'
+        ));
+    return;
+}
+
+function EXIF_delete() {
+    header('Content-Type: application/json');
+    $db = DBModel::getInstance();
+    $type = $_POST['type'];
+    $entry_id = intval(POD::escapeString($_POST['entry_id']));
+    $url = $_POST['url'];
+
+    $db->reset('ExifCaches');
+    $db->setQualifier('type', 'eq', $type, true);
+    $db->setQualifier('entry_id', 'eq', $entry_id);
+    $db->setQualifier('url', 'eq', $url, true);
+    $row = $db->getRow();
+    if(is_null($row) || empty($row)) {
+        jsonify(array(
+            'success' => false,
+            'message' => 'target not found'
+        ));
+        return;
+    }
+
+    $result = $db->delete();
+    jsonify(array(
+        'success' => $result,
+        'message' => 'the EXIF data has been deleted successfully'
+    ));
+    return;
+}
+
+function EXIF_delete_post($target, $mother) {
+    $db = DBModel::getInstance();
+    $db->reset('ExifCaches');
+    $db->setQualifier('entry_id', 'eq', $target);
+    $db->delete();
+    return true;
 }
 
 function EXIF_dataset($data) {
