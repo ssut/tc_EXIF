@@ -88,6 +88,12 @@
                             <mandatory>0</mandatory>
                             <default>0</default>
                         </param>
+                        <param>
+                            <name>p</name>
+                            <type>int</type>
+                            <mandatory>0</mandatory>
+                            <default>1</default>
+                        </param>
                     </params>
                 </method>
             </viewMethods>
