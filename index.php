@@ -72,7 +72,8 @@ function EXIF_other_image($target) {
     requireComponent('Textcube.Function.Setting');
     $config = misc::fetchConfigVal($configVal);
 
-    if(array_key_exists('addLinkToManage', $config) && $config['addLinkToManage']) {
+    if(array_key_exists('addLinkToManage', $config) && $config['addLinkToManage'] &&
+        Acl::check('group.editors')) {
         $admin_url = '/owner/plugin/adminMenu?name=tc_EXIF/EXIF_admin&entry=' . $entry['id'];
         $head = <<<HTML
 <div style="text-align: center; font-size: 10px; padding: 2px; margin: 1px">
