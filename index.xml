@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <plugin version="1.0">
     <title>EXIF</title>
-    <version>1.0</version>
+    <version>1.0-1</version>
     <description xml:lang="ko"><![CDATA[JPEG 이미지의 EXIF 데이터를 표시합니다.]]></description>
     <description xml:lang="en"><![CDATA[Displays JPEG Images with corresponding EXIF if available.]]></description>
     <license>MIT</license>
