@@ -1,8 +1,7 @@
 <?php
 function EXIF_default_css($target) {
     global $configVal;
-    requireComponent('Textcube.Function.Setting');
-    $config = misc::fetchConfigVal($configVal);
+    $config = Setting::fetchConfigVal($configVal);
 
     if(array_key_exists('attachedImage', $config) !== false &&
         $config['insertCSS']) {
@@ -38,13 +37,12 @@ HTML;
 
 function EXIF_attached_image($target, $mother) {
     global $configVal, $entry;
-    requireComponent('Textcube.Function.Setting');
-    $config = misc::fetchConfigVal($configVal);
+    $config = Setting::fetchConfigVal($configVal);
     if(!isset($entry['id'])) return $target;
     if(is_null($config)) return $target;
     if(array_key_exists('attachedImage', $config) === false ||
         $config['attachedImage'] !== '1') return $target;
-    $ext = misc::getFileExtension($mother);
+    $ext = Misc::getFileExtension($mother);
     if($ext !== 'jpg' && $ext !== 'jpeg') return $target;
     unset($ext);
 
@@ -69,8 +67,7 @@ function EXIF_attached_image($target, $mother) {
 
 function EXIF_other_image($target) {
     global $configVal, $entry, $defaultURL;
-    requireComponent('Textcube.Function.Setting');
-    $config = misc::fetchConfigVal($configVal);
+    $config = Setting::fetchConfigVal($configVal);
 
     if(array_key_exists('addLinkToManage', $config) && $config['addLinkToManage'] &&
         Acl::check('group.editors')) {
@@ -134,8 +131,7 @@ HTML;
 
 function EXIF_tagging($exif) {
     global $configVal, $entry;
-    requireComponent('Textcube.Function.Setting');
-    $config = misc::fetchConfigVal($configVal);
+    $config = Setting::fetchConfigVal($configVal);
     $code = '';
 
     // not Google Maps :p
@@ -306,7 +302,7 @@ function EXIF_delete_post($target, $mother) {
 }
 
 function EXIF_dataset($data) {
-    $cfg = misc::fetchConfigVal($data);
+    $cfg = Setting::fetchConfigVal($data);
     return true;
 }
 
