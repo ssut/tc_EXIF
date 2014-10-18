@@ -14,8 +14,10 @@ function EXIF_admin_load() {
     $count = $db->getCount();
     $db->setOrder('entry_id', 'desc');
     $all = $db->getAll('entry_id');
-    foreach($all as $key => list($k, $v)) {
-        array_push($entries, $k);
+    $all = array_values($all);
+    reset($all);
+    while(list($key, $k) = each($all)) {
+        array_push($entries, $k[0]);
     }
     $entries = array_unique($entries);
 
@@ -48,7 +50,8 @@ function EXIF_admin_load() {
         <input type="hidden" name="name" value="<?php echo $_GET['name'] ?>">
         Select entry <select name="entry"><?php
             echo '<option value="0">all</option>';
-            foreach($entries as $key => list($num, $title)) {
+            reset($entries);
+            while(list($key, list($num, $title)) = each($entries)) {
                 $title = htmlspecialchars($title);
                 $selected = $entry == $num ? ' selected' : '';
                 echo '<option value="' . $num . '"' . $selected . '>' . $num . ' :: ' . $title . '</option>';
@@ -91,16 +94,7 @@ function EXIF_admin_load() {
                 $preview_image = substr($item['url'], stripos($item['url'], 'attach') - 1);
             }
 
-            $data_tooltip = json_encode($data, JSON_PRETTY_PRINT);
-            $data_tooltip = strtr($data_tooltip, array(
-                "\r" => '',
-                "\n" => '<br>',
-                "\/" => '/',
-                '"' => "",
-                '    ' => '&nbsp;&nbsp;&nbsp;&nbsp;<strong>',
-                ': ' => '</strong> ',
-                ',' => ''
-            ));
+            $data_tooltip = json_pretty_encode($data);
 
             $uniq = json_encode(array(
                 'type' => $item['type'],

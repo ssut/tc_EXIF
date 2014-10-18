@@ -108,7 +108,8 @@ HTML;
     unset($pattern);
     unset($src_pattern);
 
-    foreach($images as list($tag, $url)) {
+    reset($images);
+    while(list($index, list($tag, $url)) = each($images)) {
         $exif = EXIF_cache(1, $entry['id'], $url);
         if($exif === true) continue; // no exif
         if($exif === false) {
@@ -314,10 +315,9 @@ function extract_EXIF($path) {
     try {
         $content = file_get_contents($path);
         $data = new PelDataWindow($content);
+        unset($content);
     } catch (Exception $e) {
         return false;
-    } finally {
-        unset($content);
     }
     if(!PelJpeg::isValid($data)) return false;
 
@@ -390,4 +390,18 @@ function set_or_null(&$array, $key, $needle, &$haystack) {
     }
 }
 
+function json_pretty_encode($target) {
+    $json = json_encode($target);
+    $json = strtr($json, array(
+        '{"' => "{<br>&nbsp;&nbsp;&nbsp;&nbsp;<strong>",
+        "{" => "{<br>",
+        "}" => '<br>}',
+        ',"' => '<br>&nbsp;&nbsp;&nbsp;&nbsp;<strong>',
+        '"' => "",
+        ':' => '</strong> ',
+        '\/' => '/',
+        ',' => ''));
+
+    return $json;
+}
 ?>
