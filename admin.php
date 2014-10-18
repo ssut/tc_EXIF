@@ -110,7 +110,7 @@ function EXIF_admin_load() {
             <td><input type="button" name="toggleEnabled" value="<?php echo $item['is_enabled'] == 1 ? 'ON' : 'OFF' ?>" data-data='<?php echo $uniq ?>'></td>
             <td><input type="button" name="deleteExif" value="DELETE" data-data='<?php echo $uniq ?>'></td>
         </tr>
-    <?
+    <?php
         }
     ?>
     </tbody>
