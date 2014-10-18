@@ -77,7 +77,7 @@
             var data = self.data('data');
             $.ajax({
                 type: 'POST',
-                url: '/plugin/EXIF/toggle',
+                url: baseURL + '/plugin/EXIF/toggle',
                 data: data,
                 cache: false,
                 beforeSend: function() {
@@ -97,7 +97,7 @@
             var entry = self.data('entry');
             $.ajax({
                 type: 'POST',
-                url: '/plugin/EXIF/toggle',
+                url: baseURL + '/plugin/EXIF/toggle',
                 data: {
                     type: 'batch',
                     entry_id: entry,
@@ -121,7 +121,7 @@
             var entry = self.data('entry');
             $.ajax({
                 type: 'POST',
-                url: '/plugin/EXIF/toggle',
+                url: baseURL + '/plugin/EXIF/toggle',
                 data: {
                     type: 'batch',
                     entry_id: entry,
@@ -146,7 +146,7 @@
             var entry = self.data('entry');
             $.ajax({
                 type: 'POST',
-                url: '/plugin/EXIF/delete',
+                url: baseURL + '/plugin/EXIF/delete',
                 data: {
                     type: 'batch',
                     entry_id: entry
@@ -169,7 +169,7 @@
             var data = self.data('data');
             $.ajax({
                 type: 'POST',
-                url: '/plugin/EXIF/delete',
+                url: baseURL + '/plugin/EXIF/delete',
                 data: data,
                 cache: false,
                 beforeSend: function() {
