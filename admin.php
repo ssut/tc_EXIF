@@ -137,6 +137,6 @@ function EXIF_admin_load() {
 
 <script>var baseURL = "<?php echo $defaultURL ?>";</script>
 <script src="<?php echo $pluginURL ?>/images/admin.js"></script>
-<?
+<?php
 }
 ?>
