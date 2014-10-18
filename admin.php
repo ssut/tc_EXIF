@@ -1,6 +1,6 @@
 <?php
 function EXIF_admin_load() {
-    global $db_prefix, $suri, $pluginURL;
+    global $db_prefix, $suri, $defaultURL, $pluginURL;
 
     $entry = isset($_GET['entry']) ? intval($_GET['entry']) : 0;
     $p = isset($_GET['p']) ? intval($_GET['p']) : 1;
@@ -91,7 +91,7 @@ function EXIF_admin_load() {
 
             $preview_image = $item['url'];
             if($item['type'] == 0) {
-                $preview_image = substr($item['url'], stripos($item['url'], 'attach') - 1);
+                $preview_image = $defaultURL . substr($item['url'], stripos($item['url'], 'attach') - 1);
             }
 
             $data_tooltip = json_pretty_encode($data);
@@ -135,6 +135,7 @@ function EXIF_admin_load() {
     </div>
 </div>
 
+<script>var baseURL = "<?php echo $defaultURL ?>";</script>
 <script src="<?php echo $pluginURL ?>/images/admin.js"></script>
 <?
 }

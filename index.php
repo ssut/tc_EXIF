@@ -71,7 +71,7 @@ function EXIF_other_image($target) {
 
     if(array_key_exists('addLinkToManage', $config) && $config['addLinkToManage'] &&
         Acl::check('group.editors')) {
-        $admin_url = '/owner/plugin/adminMenu?name=tc_EXIF/EXIF_admin&entry=' . $entry['id'];
+        $admin_url = $defaultURL . '/owner/plugin/adminMenu?name=tc_EXIF/EXIF_admin&entry=' . $entry['id'];
         $head = <<<HTML
 <div style="text-align: center; font-size: 10px; padding: 2px; margin: 1px">
     <a href="{$admin_url}" target="_blank">EXIF settings of this article</a>
