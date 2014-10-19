@@ -107,7 +107,7 @@ function EXIF_admin_load() {
             <td><?php echo $item['type'] == 0 ? 'blog' : 'other' ?></td>
             <td><a href="<?php echo $preview_image ?>" target="_blank" class="preview"><img src="<?php echo $preview_image ?>" alt="preview image" width="auto" height="20px"></a></td>
             <td><a class="tooltip" title="<?php echo $data_tooltip ?>"><?php echo $preview ?></a></td>
-            <td><input type="button" name="toggleEnabled" value="<?php echo $item['is_enabled'] == 1 ? 'ON' : 'OFF' ?>" data-data='<?php echo $uniq ?>'></td>
+            <td><a href="#" class="toggleEnabled toggler<?php echo $item['is_enabled'] == 1 ? '' : ' off' ?>" data-data='<?php echo $uniq ?>'>&nbsp;</a></td>
             <td><input type="button" name="deleteExif" value="DELETE" data-data='<?php echo $uniq ?>'></td>
         </tr>
     <?php

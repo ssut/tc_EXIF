@@ -70,9 +70,9 @@
     };
 
     var setButtonEvent = function() {
-        var buttons = $('input[name^="batch"], table.data-inbox input[type="button"]');
+        var buttons = $('input[name^="batch"], table.data-inbox input[type="button"], a.toggleEnabled');
 
-        $('input[name="toggleEnabled"]').click(function() {
+        $('a.toggleEnabled').click(function() {
             var self = $(this);
             var data = self.data('data');
             $.ajax({
@@ -86,7 +86,11 @@
                 success: function(data) {
                     buttons.removeAttr('disabled');
                     if(data.success) {
-                        self.val(data.message);
+                        if(data.message == 'OFF') {
+                            self.addClass('off');
+                        } else {
+                            self.removeClass('off');
+                        }
                     } else alert(data.message);
                 }
             });
