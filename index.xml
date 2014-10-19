@@ -17,6 +17,7 @@
         <listener event="DeletePost" handler="EXIF_delete_post" />
         <listener event="/plugin/EXIF/toggle" handler="EXIF_toggle" scope="owner" />
         <listener event="/plugin/EXIF/delete" handler="EXIF_delete" scope="owner" />
+        <listener event="/plugin/EXIF/saveCategory" handler="EXIF_save_category" scope="owner" />
         <tag name="SKIN_head_end" handler="EXIF_default_css" />
         <tag name="EXIF_Setting_Link" handler="EXIF_setting_link" />
         <config dataValHandler="EXIF_dataset" xml:lang="ko">
@@ -169,6 +170,29 @@
             <key>type</key>
             <key>entry_id</key>
             <key>url</key>
+        </table>
+        <table>
+            <name>ExifDisabledCategories</name>
+            <fields>
+                <field>
+                    <name>blog_id</name>
+                    <attribute>int</attribute>
+                    <length>11</length>
+                    <isnull>0</isnull>
+                    <default>0</default>
+                    <!-- associated blog id -->
+                </field>
+                <field>
+                    <name>category_id</name>
+                    <attribute>int</attribute>
+                    <length>11</length>
+                    <isnull>0</isnull>
+                    <default>0</default>
+                    <!-- associated category id -->
+                </field>
+            </fields>
+            <key>blog_id</key>
+            <key>category_id</key>
         </table>
     </storage>
 </plugin>

@@ -44,7 +44,39 @@ function EXIF_admin_load() {
         return array($value, $title);
     }, $entries);
 
+    $categories = POD::queryAll("SELECT `blogid`, `id`, `name` FROM `{$db_prefix}Categories`");
+    $db->reset('ExifDisabledCategories');
+    $off_categories = $db->getAll();
 ?>
+<form id="toggleCategory" method="post" action="<?php $defaultURL ?>/plugin/EXIF/saveToggle">
+    Toggle category <?php
+        foreach($categories as $category) {
+            $disabled = false;
+            foreach($off_categories as $off_category) {
+                if($off_category['blog_id'] == $category['blogid'] &&
+                    $off_category['category_id'] == $category['id']) {
+                    $disabled = true;
+                    break;
+                }
+            }
+            $name = $category['name'];
+            $value = $category['blogid'] . ',' . $category['id'];
+            $checked = $disabled ? '' : ' checked';
+            echo '<label>';
+            echo ' <input type="checkbox" name="on[]" ' . $checked . ' value="' . $value . '"> ' . $name;
+            echo '</label>';
+        }
+    ?>
+    &nbsp;<input type="submit" value="save">
+</form>
+<hr>
+<form method="get" action="<?php echo $suri['url'] ?>">
+    <div>
+        <input type="hidden" name="name" value="<?php echo $_GET['name'] ?>">
+        Select category 
+    </div>
+</form>
+<hr>
 <form method="get" action="<?php echo $suri['url'] ?>">
     <div>
         <input type="hidden" name="name" value="<?php echo $_GET['name'] ?>">

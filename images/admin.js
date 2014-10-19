@@ -22,7 +22,7 @@
         function(){
             this.title = this.t;
             $("#tooltip").remove();
-        }); 
+        });
         $("a.tooltip").mousemove(function(e){
             $("#tooltip")
                 .css("top",(e.pageY - xOffset) + "px")
@@ -71,6 +71,27 @@
 
     var setButtonEvent = function() {
         var buttons = $('input[name^="batch"], table.data-inbox input[type="button"], a.toggleEnabled');
+
+        $('#toggleCategory').submit(function() {
+            var serialized = $(this).serialize();
+            $.ajax({
+                type: 'POST',
+                url: baseURL + '/plugin/EXIF/saveCategory',
+                data: serialized,
+                cache: false,
+                beforeSend: function() {
+                    buttons.attr('disabled',' disabled');
+                },
+                success: function(data) {
+                    buttons.removeAttr('disabled');
+                    if(data.success) {
+                        alert('Saved.');
+                    }
+                }
+            });
+
+            return false;
+        });
 
         $('a.toggleEnabled').click(function() {
             var self = $(this);

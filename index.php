@@ -225,6 +225,52 @@ function jsonify($arr) {
     echo json_encode($arr);
 }
 
+function EXIF_save_category() {
+    $ctx = Model_Context::getInstance();
+    $db_prefix = $ctx->getProperty('database.prefix');
+    header('Content-Type: application/json');
+
+    $categories = POD::queryAll("SELECT `blogid`, `id`, `name` FROM `{$db_prefix}Categories`");
+    $off_categories = array();
+    $on_list = $_POST['on'];
+
+    foreach($categories as $category) {
+        $in = false;
+        foreach($on_list as $on) {
+            $on = explode(',', $on);
+            if(count($on) !== 2) return; // malformed data
+            if($category['blogid'] == $on[0] && $category['id'] == $on[1]) {
+                $in = true;
+                break;
+            }
+        }
+
+        if(!$in) {
+            $off_categories[] = array(
+                $category['blogid'],
+                $category['id']
+            );
+        }
+    }
+
+    $db = DBModel::getInstance();
+    $db->reset('ExifDisabledCategories');
+    $db->delete();
+    reset($off_categories);
+    while(list($index, list($blog_id, $category_id)) = each($off_categories)) {
+        $db->reset('ExifDisabledCategories');
+        $db->setAttribute('blog_id', $blog_id);
+        $db->setAttribute('category_id', $category_id);
+        $db->insert();
+    }
+
+    jsonify(array(
+        'success' => true,
+        'message' => ''
+    ));
+    return;
+}
+
 function EXIF_toggle() {
     header('Content-Type: application/json');
     $db = DBModel::getInstance();
