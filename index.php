@@ -165,7 +165,12 @@ function EXIF_tagging($exif) {
 
     if(count($matches) === 0) return '';
     $code = '<dl>';
+    $date_format = isset($config['dateFormat']) ? $config['dateFormat'] : '';
     foreach($matches as $key => $value) {
+        if($key === 'DateTime' && !empty($date_format)) {
+            $value = date($date_format, $value);
+        }
+
         $code .= '<dt data-key="' . $key . '">' . $key . '</dt>';
         $code .= '<dd>' . htmlspecialchars($value) . '</dd>';
     }
@@ -308,8 +313,8 @@ function EXIF_dataset($data) {
 }
 
 function extract_EXIF($path) {
-    require_once(dirname(__FILE__) . '/lib/PelDataWindow.php');
-    require_once(dirname(__FILE__) . '/lib/PelJpeg.php');
+    require_once(dirname(__FILE__) . '/lib/Pel/PelDataWindow.php');
+    require_once(dirname(__FILE__) . '/lib/Pel/PelJpeg.php');
 
     $data = null;
     try {
@@ -378,6 +383,23 @@ function extract_EXIF($path) {
         if($max_aperture !== '') {
             $info['MaxAperture'] = $max_aperture;
         }
+    }
+
+    if(!is_null($info['DateTime']) && !empty($info['DateTime'])) {
+        $pattern = '/^(?P<year>\d+):(?P<month>\d+):(?P<day>\d+)\s(?P<hour>\d+):(?P<minute>\d+):(?P<second>\d+)$/';
+        if(preg_match($pattern, $info['DateTime'], $matches)) {
+            $y = $matches['year'];
+            $m = $matches['moth'];
+            $d = $matches['day'];
+            $h = $matches['hour'];
+            $i = $matches['minute'];
+            $s = $matches['second'];
+            $info['DateTime'] = mktime($h, $i, $s, $m, $d, $y);
+        } else {
+            $info['DateTime'] = 0;
+        }
+
+        unset($pattern);
     }
 
     return $info;
