@@ -69,16 +69,6 @@ function EXIF_other_image($target) {
     global $configVal, $entry, $defaultURL;
     $config = Setting::fetchConfigVal($configVal);
 
-    if(array_key_exists('addLinkToManage', $config) && $config['addLinkToManage'] &&
-        Acl::check('group.editors')) {
-        $admin_url = $defaultURL . '/owner/plugin/adminMenu?name=tc_EXIF/EXIF_admin&entry=' . $entry['id'];
-        $head = <<<HTML
-<div style="text-align: center; font-size: 10px; padding: 2px; margin: 1px">
-    <a href="{$admin_url}" target="_blank">EXIF settings of this article</a>
-</div>
-HTML;
-        $target = $head . $target;
-    }
     if(ini_get('allow_url_fopen') !== '1') return $target;
 
     if(!isset($entry['id'])) return $target;
@@ -125,6 +115,24 @@ HTML;
         $append = EXIF_tagging($exif);
         $new = '<div class="tc_EXIF tc_EXIF_other">' . $tag . $append . '</div>';
         $target = str_replace($tag, $new, $target);
+    }
+
+    return $target;
+}
+
+function EXIF_setting_link($target) {
+    global $configVal, $entry, $defaultURL;
+    $config = Setting::fetchConfigVal($configVal);
+
+    if(array_key_exists('addLinkToManage', $config) && $config['addLinkToManage'] &&
+        Acl::check('group.editors')) {
+        $admin_url = $defaultURL . '/owner/plugin/adminMenu?name=tc_EXIF/EXIF_admin&entry=' . $entry['id'];
+        $head = <<<HTML
+<div style="text-align: center; font-size: 10px; padding: 2px; margin: 1px">
+    <a href="{$admin_url}" target="_blank">EXIF setting of this article</a>
+</div>
+HTML;
+        $target = $head . $target;
     }
 
     return $target;

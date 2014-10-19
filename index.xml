@@ -18,6 +18,7 @@
         <listener event="/plugin/EXIF/toggle" handler="EXIF_toggle" scope="owner" />
         <listener event="/plugin/EXIF/delete" handler="EXIF_delete" scope="owner" />
         <tag name="SKIN_head_end" handler="EXIF_default_css" />
+        <tag name="EXIF_Setting_Link" handler="EXIF_setting_link" />
         <config dataValHandler="EXIF_dataset" xml:lang="ko">
             <window width="500" height="610" />
             <fieldset legend="EXIF 적용 범위">
