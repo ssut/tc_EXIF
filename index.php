@@ -50,6 +50,9 @@ function EXIF_attached_image($target, $mother) {
     $exif = EXIF_cache(0, $entry['id'], $attachment);
     if($exif === true) return $target;
     if($exif === false) {
+        if(EXIF_check_category($entry['blogid'], $entry['category'])) {
+            return $target;
+        }
         $exif = extract_EXIF($attachment);
         if($exif === false) {
             EXIF_cache(0, $entry['id'], $attachment, array('NoEXIF' => 1));
@@ -103,6 +106,9 @@ function EXIF_other_image($target) {
         $exif = EXIF_cache(1, $entry['id'], $url);
         if($exif === true) continue; // no exif
         if($exif === false) {
+            if(EXIF_check_category($entry['blogid'], $entry['category'])) {
+                return $target;
+            }
             $exif = extract_EXIF($url);
             if($exif === false) {
                 EXIF_cache(1, $entry['id'], $url, array('NoEXIF' => 1));
@@ -223,6 +229,21 @@ function EXIF_admin() {
 
 function jsonify($arr) {
     echo json_encode($arr);
+}
+
+function EXIF_check_category($blog, $category) {
+    $db = DBModel::getInstance();
+    $db->reset('ExifDisabledCategories');
+    $db->setQualifier('blog_id', 'eq', $blog, true);
+    $db->setQualifier('category_id', 'eq', $category, true);
+    $result = $db->getRow();
+
+    $exist = false;
+    if(!is_null($row) && !empty($row)) {
+        $exist = true;
+    }
+
+    return !$exist;
 }
 
 function EXIF_save_category() {
