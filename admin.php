@@ -2,6 +2,7 @@
 function EXIF_admin_load() {
     global $db_prefix, $suri, $defaultURL, $pluginURL;
 
+    $category = isset($_GET['category']) ? intval($_GET['category']) : 0;
     $entry = isset($_GET['entry']) ? intval($_GET['entry']) : 0;
     $p = isset($_GET['p']) ? intval($_GET['p']) : 1;
 
@@ -49,34 +50,82 @@ function EXIF_admin_load() {
     $off_categories = $db->getAll();
 ?>
 <form id="toggleCategory" method="post" action="<?php $defaultURL ?>/plugin/EXIF/saveToggle">
-    Toggle category <?php
-        foreach($categories as $category) {
-            $disabled = false;
-            foreach($off_categories as $off_category) {
-                if($off_category['blog_id'] == $category['blogid'] &&
-                    $off_category['category_id'] == $category['id']) {
-                    $disabled = true;
-                    break;
-                }
-            }
-            $name = $category['name'];
-            $value = $category['blogid'] . ',' . $category['id'];
-            $checked = $disabled ? '' : ' checked';
-            echo '<label>';
-            echo ' <input type="checkbox" name="on[]" ' . $checked . ' value="' . $value . '"> ' . $name;
-            echo '</label>';
-        }
-    ?>
-    &nbsp;<input type="submit" value="save">
+    <table class="data-inbox" cellspacing="0" cellpadding="0">
+        <thead>
+            <tr>
+                <th><span class="text">Enabled categories</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="even-line inactive-class">
+                <td>
+                    <div class="categoryList">
+                        <div class="content">
+                        <?php
+                            foreach($categories as $category) {
+                                $disabled = false;
+                                foreach($off_categories as $off_category) {
+                                    if($off_category['blog_id'] == $category['blogid'] &&
+                                        $off_category['category_id'] == $category['id']) {
+                                        $disabled = true;
+                                        break;
+                                    }
+                                }
+                                $name = $category['name'];
+                                $value = $category['blogid'] . ',' . $category['id'];
+                                $checked = $disabled ? '' : ' checked';
+                                echo '<label>';
+                                echo ' <input type="checkbox" name="on[]" ' . $checked . ' value="' . $value . '"> ' . $name;
+                                echo '</label>';
+                            }
+                        ?>
+                        </div>
+                        <input type="submit" value="save">
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </form>
-<hr>
-<form method="get" action="<?php echo $suri['url'] ?>">
-    <div>
-        <input type="hidden" name="name" value="<?php echo $_GET['name'] ?>">
-        Select category 
-    </div>
+<form id="listFilter" method="get" action="<?php echo $suri['url'] ?>">
+    <input type="hidden" name="name" value="<?php echo $_GET['name'] ?>">
+    <table class="data-inbox" cellspacing="0" cellpadding="0">
+        <thead>
+            <tr>
+                <th><span class="text">List filter</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="even-line inactive-class">
+                <td>
+                    Select category to show entries.
+                    <div class="caetgory">
+                        <strong>CATEGORY</strong>
+                        <select name="category"><?php
+                            echo '<option value="0">all</option>';
+                            reset($categories);
+                            while(list($key, $value) = each($categories)) {
+                                $id = $value['id'];
+                                $name = htmlspecialchars($value['name']);
+                                $selected = $category == $id ? ' selected' : '';
+                                echo '<option value="' . $id . '"' . $selected . '>' . $id . ' :: ' . $name . '</option>';
+                            }
+
+                            $disables = $entry && $entry > 0 ? '' : ' disabled';
+                            ?></select>
+                    </div>
+                    <div class="article">
+                        <strong>ENTRY</strong>
+                        <select name="entry"></select>
+                    </div>
+                    <div>
+                        <input type="submit" value="search">
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </form>
-<hr>
 <form method="get" action="<?php echo $suri['url'] ?>">
     <div>
         <input type="hidden" name="name" value="<?php echo $_GET['name'] ?>">
