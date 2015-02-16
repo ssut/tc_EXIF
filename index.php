@@ -8,9 +8,17 @@ function EXIF_default_css($target) {
     $target .= <<<HTML
 <style type="text/css">
 div.tc_EXIF {
+    text-align: center;
 }
 div.tc_EXIF dl {
     font-size: 0.6em;
+    display: block;
+    width: 100%;
+    text-align: Center;
+    color: #444;
+    font-family: 'Helvetica Neue';
+    line-height: 0.6rem;
+    margin: 10px 0 5px 0;
 }
 div.tc_EXIF dl dt {
     display: /*inline-block*/none;
@@ -22,6 +30,10 @@ div.tc_EXIF dl dd {
     margin: 0;
     padding: 0 5px;
     word-break: break-all;
+    border-right: 1px solid #ddd;
+}
+div.tc_EXIF dl dd:last-child {
+  border-right: none;
 }
 div.tc_EXIF:after {
     content: '';
@@ -292,6 +304,44 @@ function EXIF_save_category() {
     return;
 }
 
+function EXIF_load_entries() {
+    $ctx = Model_Context::getInstance();
+    $db_prefix = $ctx->getProperty('database.prefix');
+    $db = DBModel::getInstance();
+    $db->reset('ExifCaches');
+
+    header('Content-Type: application/json');
+    $data = array();
+    $where = '';
+    $category = isset($_GET['category']) ? $_GET['category'] : -1;
+    if($category !== -1) {
+        $category = intval(POD::escapeString($category));
+        $where = " WHERE `category` = {$category}";
+    }
+    $entries = POD::queryAll("SELECT `id`, `category`, `title` FROM `{$db_prefix}Entries`" . $where);
+    $caches = $db->getAll();
+
+    ini_set('html_errors', 0);
+    var_dump($entries);
+    var_dump($caches);
+
+    $data['notCached'] = array_filter($entries, function($v) use (&$entries) {
+        return array_search2($caches, 'entry_id', $v['id']);
+    });
+    $data['cached'] = array_filter($entries, function($v) use (&$entries) {
+        return !array_search2($caches, 'entry_id', $v['id']);
+    });
+
+    $data['notCached'] = array_intersect_key($entries, array_flip($data['notCached']));
+    $data['cached'] = array_intersect_key($entries, array_flip($data['cached']));
+
+    jsonify(array(
+        'success' => true,
+        'data' => $data
+    ));
+    return;
+}
+
 function EXIF_toggle() {
     header('Content-Type: application/json');
     $db = DBModel::getInstance();
@@ -485,6 +535,22 @@ function set_or_null(&$array, $key, $needle, &$haystack) {
     if(array_key_exists($needle, $haystack)) {
         $array[$key] = $haystack[$needle]->getText();
     }
+}
+
+function array_search2($array, $key, $value) {
+    $results = array();
+
+    if (is_array($array)) {
+        if (isset($array[$key]) && $array[$key] == $value) {
+            $results[] = $array;
+        }
+
+        foreach ($array as $subarray) {
+            $results = array_merge($results, search($subarray, $key, $value));
+        }
+    }
+
+    return $results;
 }
 
 function json_pretty_encode($target) {
