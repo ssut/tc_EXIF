@@ -92,8 +92,8 @@ HTML;
     if(preg_match_all($pattern, $target, $matches)) {
         if(isset($matches[0]) && count($matches[0]) > 0) {
             foreach($matches[0] as $image) {
-                if(stripos($image, $defaultURL) !== false &&
-                    stripos($image, 'attach') !== false) continue;
+                if(stripos($image, $defaultURL) === false ||
+                    stripos($image, 'attach') === false) continue;
                 if(preg_match($src_pattern, $image, $src_matches)) {
                     if(!isset($src_matches[1])) continue;
                     $src = $src_matches[1];
